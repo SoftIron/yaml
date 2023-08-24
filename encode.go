@@ -109,11 +109,33 @@ func (e *encoder) marshalDoc(tag string, in reflect.Value) {
 }
 
 func (e *encoder) marshal(tag string, in reflect.Value) {
-	tag = shortTag(tag)
 	if !in.IsValid() || in.Kind() == reflect.Ptr && in.IsNil() {
 		e.nilv()
 		return
 	}
+
+	// Inspired by json/encode.go newTypeEncoder:
+	//
+	// If we have a non-pointer value whose type implements Marshaler with a
+	// value receiver, then we're better off taking the address of the value -
+	// otherwise we end up with an allocation as we cast the value to an
+	// interface.
+
+	// This also means that when starting with a non-pointer value as the root
+	// of the document we will try the pointer value to see of the Marshaler
+	// interface is implemented.
+	//
+	// Fixes: https://github.com/go-yaml/yaml/issues/714
+
+	if in.Kind() != reflect.Pointer && in.CanAddr() {
+		p := in.Addr()
+		if _, ok := p.Interface().(Marshaler); ok {
+			in = p // marshal in as a pointer
+		}
+	}
+
+	tag = shortTag(tag)
+
 	iface := in.Interface()
 	switch value := iface.(type) {
 	case *Node:
