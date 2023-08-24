@@ -1,3 +1,5 @@
+Fork from [go-yaml/yaml](https://github.com/go-yaml/yaml).
+
 # YAML support for the Go language
 
 Introduction
@@ -36,11 +38,11 @@ supported since they're a poor design and are gone in YAML 1.2.
 Installation and usage
 ----------------------
 
-The import path for the package is *gopkg.in/yaml.v3*.
+The import path for the package is *github.com/softiron/yaml/v3*.
 
 To install it, run:
 
-    go get gopkg.in/yaml.v3
+    go get github.com/softiron/yaml/v3
 
 API documentation
 -----------------
